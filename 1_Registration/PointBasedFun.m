@@ -20,7 +20,7 @@ y_err = mA-y_m;
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>> MATRICE DI COVARIANZA DEGLI ERRORI FIDUCIARI >>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-%Calcolo della matrice di covarianza degli errori fiduciari
+% Calcolo della matrice di covarianza degli errori fiduciari
 
 Z=zeros(2,2);
 
@@ -70,26 +70,26 @@ s = s_1/s_2;
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> t >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-% RICONVERSIONE COORDINATE
+% RICONVERSIONE COORDINATE % dim(2) è la x mentre y_ o x_ m (1) è x
 
-yy = round(y_m(2)) - dim(1)/2; 
+yy = round(-y_m(2)) + dim(1)/2 +1; 
 
-yx = -dim(2)/2 + round(y_m(1));
+yx = round(y_m(1)) - dim(2)/2 +1;
 
-xy = round(x_m(2)) - dim(1)/2;
+xy = round(-x_m(2)) + dim(1)/2 +1;
 
-xx = -dim(2)/2 + round(x_m(1));
+xx = round(x_m(1)) - dim(2)/2 +1;
 
 y_m = [yx yy];
 x_m = [xx xy];
 
-t=y_m'-s*R*x_m';
+t = y_m'-s*R*x_m';
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PARAMETRI >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 alpha = -atan(R(1,2)/R(1,1));
-tx = t(1);
-ty = t(2);
+tx = t(2);
+ty = t(1);
    
 end
