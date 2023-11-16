@@ -272,8 +272,8 @@ plot(xg_B ,yg_B,'g+',LineWidth = 1)
 
 
 % Autovettori
-[autovet_A, autoval_A] = eig(I_A);
-[autovet_B, autoval_B] = eig(I_B);
+[autovet_A, ~] = eig(I_A);
+[autovet_B, ~] = eig(I_B);
 E1 = zeros(2,2);
 E2 = E1;
 
