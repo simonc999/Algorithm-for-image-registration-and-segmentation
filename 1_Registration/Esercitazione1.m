@@ -56,8 +56,14 @@ close all
 % RANGE=[3 12];
 
 rif_img = imread('coronal A.tif');
-float_img = imread('coronal D.tif');
-% float_img = imread('coronal B.tif');
+
+float_img = imread('coronal B.tif');
+ScaleFactor = false;
+
+% float_img = imread('coronal D.tif');
+% ScaleFactor = true;
+
+
 RANGE = [10 20];
 
 % rif_img = imread('coronal_A.tif');
@@ -214,7 +220,7 @@ w = [1 1 1] ;
 % >>>>>>>>>>>>>>>>>>> Applico funzione di ricerca >>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-[alpha,tx,ty,s] = PointBasedFun(w,markerA,markerB,pixel);
+[alpha,tx,ty,s] = PointBasedFun(w,markerA,markerB,pixel,ScaleFactor);
  
 
 
@@ -243,6 +249,7 @@ a = double(imread("coronal_A_bin.tif","tif")/255);
 b = double(imread("coronal_B_bin.tif","tif")/255);
 % b = double(imread("coronal_D_bin.tif","tif")/255);
 
+% passo al metodo le immagini binarizzate
 [I_A, I_B, xg_A, xg_B, yg_A, yg_B, X_P, Y_P] = ParMethodFun(a,b);
 
 figure(5)
@@ -287,7 +294,7 @@ ta = [X_P(end)/2 - xg_A ; Y_P(end)/2 - yg_A];
 tb = [X_P(end)/2 - xg_B ; Y_P(end)/2 - yg_B];
 Fs =round(sqrt(sum(sum(A))/sum(sum(B))),2);
 
-p_A = [asin(E1(2,1)), ta(1), ta(2), 1, 1, 0];
+p_A = [asin(E1(2,1)), ta(1), ta(2), 1, 1, 0]; % trovo un solo angolo
 p_B = [asin(E2(2,1)), tb(1), tb(2), 1, 1, 0];
 % p_B = [asin(autovet_B(2,1)), tb(1), tb(2), Fs, Fs, 0]; % per scala
 
@@ -370,11 +377,11 @@ close all
 %----------- coronal_2023.tif
 rif_img=imread('coronal A.tif');
 
-% float_img=imread('coronal_B_2023.tif');
-% sxx = 1; syy = 1; sxy = 0;
+float_img=imread('coronal B.tif');
+sxx = 1; syy = 1; sxy = 0;
 
-float_img=imread('coronal D.tif');
-sxx = 1.0776; syy = 1.0776; sxy = 0;
+% float_img=imread('coronal D.tif');
+% sxx = 1.0776; syy = 1.0776; sxy = 0;
 
 RANGE = [10 20];
 
@@ -442,10 +449,14 @@ mat_corr = [markerA(1,:),markerB(indice_dist_min(1),:); ...
 % OTTENENDO LA FUNZIONE OBBIETTIVO E PONENDO LE DERIVATE RISPETTO AI
 % PARAMETRI a b tx e ty OTTENIAMO LA MATRICE X
 
-X = [sum(mat_corr(:,3).^2 + mat_corr(:,4).^2), 0, sum(mat_corr(:,3)), sum(mat_corr(:,4));... % a
-     0, sum(mat_corr(:,3).^2 + mat_corr(:,4).^2), sum(-mat_corr(:,4)), sum(mat_corr(:,3));...% b
-     sum(mat_corr(:,3)), sum(-mat_corr(:,4)), 3, 0;... % tx
-     sum(mat_corr(:,4)), sum(mat_corr(:,3)), 0, 3]; % ty
+%     a          b         tx         ty
+
+% indici 3  e 4 estraggo soltanto le componenti markers float xi e yi
+
+X = [sum(mat_corr(:,3).^2 + mat_corr(:,4).^2), 0, sum(mat_corr(:,3)), sum(mat_corr(:,4));... % da = 0
+     0, sum(mat_corr(:,3).^2 + mat_corr(:,4).^2), sum(-mat_corr(:,4)), sum(mat_corr(:,3));...% db = 0
+     sum(mat_corr(:,3)), sum(-mat_corr(:,4)), 3, 0;... % dtx = 0
+     sum(mat_corr(:,4)), sum(mat_corr(:,3)), 0, 3]; % dty = 0
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>> CALCOLO IL VETTORE b >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -473,6 +484,9 @@ theta = X\b;
 % -- theta(4) = -ty
 
 % Trasformazione affine della float_img
+
+% theta(1) = coseno
+% theta(2) = seno
 
 alpha = -atan(theta(2)/theta(1)); % il sistema di riferimento è opposto
 tx = theta(3); 
@@ -543,20 +557,20 @@ x = input(prompt);
 %----------- coronal_2023.tif
 forTitle = 'coronal_2023.tif';
 rif_img = imread('coronal A.tif');
-% float_img = imread('coronal D.tif');
+float_img = imread('coronal D.tif');
 % Founded trasformation with traslation x,y : 7.9889, -10.8111 pixels, a rotation of -12° , and a scale(x,y) fator of 1.075,1.075.
 % time estimated for these ranges 1.468795 seconds.
-% alfa = linspace(deg2rad(-13),deg2rad(-12),2); 
-% trasx = linspace(7,8,2);
-% trasy = linspace(-10.811,-10.8,2);
-% scalex = linspace(1.075,1.08,2);
-% scaley = linspace(1.075,1.08,2);
-float_img = imread('coronal C.tif');
-alfa = -11.6*pi/180 :0.1*pi/180:-11.5*pi/180;
-trasx = -4.9:0.1:-4.8;
-trasy= -10.6:0.1:-10.5;
-scalex = 1.07:0.01:1.08;
-scaley = 0.985:0.005:0.99;
+alfa = linspace(deg2rad(-13),deg2rad(-12),2); 
+trasx = linspace(7,8,2);
+trasy = linspace(-10.811,-10.8,2);
+scalex = linspace(1.075,1.08,2);
+scaley = linspace(1.075,1.08,2);
+% float_img = imread('coronal C.tif');
+% alfa = -11.6*pi/180 :0.1*pi/180:-11.5*pi/180;
+% trasx = -4.9:0.1:-4.8;
+% trasy= -10.6:0.1:-10.5;
+% scalex = 1.07:0.01:1.08;
+% scaley = 0.985:0.005:0.99;
 
 % %----------- rm caviglia.tif (A  e B a 24 bit)
 % forTitle = 'caviglia.tif';

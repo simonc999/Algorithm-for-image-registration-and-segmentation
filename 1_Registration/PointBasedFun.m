@@ -1,4 +1,4 @@
-function [alpha,tx,ty,s]=PointBasedFun(w,mA,mb,dim)
+function [alpha,tx,ty,s]=PointBasedFun(w,mA,mb,dim,scale)
 
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -48,23 +48,27 @@ R=V*diag(v)*U';
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> s >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-s_1=0;
-
-s_2=0;
-
-x_err=x_err';
-
-y_err=y_err';
-
-for i=1:length(x_err)
-
-    s_1=s_1+(w(i)^2*R*x_err(:,i))'*y_err(:,i);
-
-    s_2=s_2+(w(i)^2*R*x_err(:,i))'*x_err(:,i);
-
+if(scale)
+    s_1=0;
+    
+    s_2=0;
+    
+    x_err=x_err';
+    
+    y_err=y_err';
+    
+    for i=1:length(x_err)
+    
+        s_1=s_1+(w(i)^2*R*x_err(:,i))'*y_err(:,i);
+    
+        s_2=s_2+(w(i)^2*R*x_err(:,i))'*x_err(:,i);
+    
+    end
+    
+    s = floor(s_1/s_2 * 100)/100;
+else
+    s = 1;
 end
-
-s = s_1/s_2;
 
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> t >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -72,13 +76,13 @@ s = s_1/s_2;
 
 % RICONVERSIONE COORDINATE % dim(2) è la x mentre y_ o x_ m (1) è x
 
-yy = round(-y_m(2)) + dim(1)/2 +1; 
+yy = round(y_m(2)) - dim(1)/2; 
 
-yx = round(y_m(1)) - dim(2)/2 +1;
+yx = round(y_m(1)) - dim(2)/2 ;
 
-xy = round(-x_m(2)) + dim(1)/2 +1;
+xy = round(x_m(2)) - dim(1)/2;
 
-xx = round(x_m(1)) - dim(2)/2 +1;
+xx = round(x_m(1)) - dim(2)/2;
 
 y_m = [yx yy];
 x_m = [xx xy];
@@ -89,7 +93,7 @@ t = y_m'-s*R*x_m';
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>> PARAMETRI >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 % >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 alpha = -atan(R(1,2)/R(1,1));
-tx = t(2);
-ty = t(1);
+tx = t(1);
+ty = t(2);
    
 end
